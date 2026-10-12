@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>हिंदी पॉडकास्ट पाठ्यचर्या (Hindi Pods Curriculum)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <h1>🎙️ हिंदी पॉड्स</h1>
+        <p>संपूर्ण ४८ पाठों की पॉडकास्ट पाठ्यचर्या</p>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="पाठ या विषय खोजें..." />
+        </div>
+      </div>
+      <ul class="episode-list" id="episode-list">
+        <!-- Injected via JavaScript -->
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content">
+      <header class="top-bar">
+        <div class="current-info">
+          <h2 id="current-title">पाठ लोड हो रहा है...</h2>
+          <span id="current-meta">शब्दावली एवं व्याकरण विश्लेषण</span>
+        </div>
+        <div class="top-actions">
+          <button class="btn btn-secondary" id="copy-btn" title="मार्कडाउन कॉपी करें">📋 कॉपी करें</button>
+          <a class="btn" id="raw-link" href="#" target="_blank" download>⬇️ डाउनलोड (.md)</a>
+        </div>
+      </header>
+      <div class="content-viewport">
+        <article class="markdown-body" id="content-area">
+          <div class="loading-box">
+            <div class="spinner"></div>
+            <p>पाठ्य सामग्री लोड हो रही है...</p>
+          </div>
+        </article>
+      </div>
+    </main>
+  </div>
+
+  <script src="assets/renderer.js"></script>
+  <script>
+    // 48 Episodes Master Curriculum Index
+    const episodes = [
+      // प्रथम चरण (Quarter 1: पाठ ०१ से १२ | शब्द ००१–३००)
+      { id: "01", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep01.md", title: "पाठ ०१: नया दिन, नया घर", words: "००१–०२५", grammar: "संज्ञा का लिंग (पुल्लिंग / स्त्रीलिंग) और विशेषण-संज्ञा संगति", ready: true },
+      { id: "02", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep02.md", title: "पाठ ०२: परिवार और रिश्ते", words: "०२६–०५०", grammar: "एकवचन और बहुवचन रूपांतरण नियम", ready: false },
+      { id: "03", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep03.md", title: "पाठ ०३: रसोई और भोजन की सुगंध", words: "०५१–०७५", grammar: "स्त्रीलिंग संज्ञाओं के बहुवचन रूप (-इयाँ, -एँ)", ready: false },
+      { id: "04", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep04.md", title: "पाठ ०४: बाज़ार की सैर", words: "०७६–१००", grammar: "अविकारी और विकारी विशेषणों का अंतर", ready: false },
+      { id: "05", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep05.md", title: "पाठ ०५: शहर और रास्ते", words: "१०१–१२५", grammar: "कारक चिह्न 'में' और 'पर' (अधिकरण कारक)", ready: false },
+      { id: "06", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep06.md", title: "पाठ ०६: प्रकृति और मौसम", words: "१२६–१५०", grammar: "कारक चिह्न 'से' (करण और अपादान कारक)", ready: false },
+      { id: "07", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep07.md", title: "पाठ ०७: शरीर और स्वास्थ्य", words: "१५१–१७५", grammar: "कर्म और संप्रदान कारक चिह्न 'को'", ready: false },
+      { id: "08", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep08.md", title: "पाठ ०८: समय और दिनचर्या", words: "१७६–२००", grammar: "सीमा बोधक चिह्न 'तक' और समय की संरचना", ready: false },
+      { id: "09", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep09.md", title: "पाठ ०९: विद्यालय और शिक्षा", words: "२०१–२२५", grammar: "तिर्यक रूप (Oblique Case) की मूल पहचान", ready: false },
+      { id: "10", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep10.md", title: "पाठ १०: गाँव और खेत-खलिहान", words: "२२६–२५०", grammar: "संज्ञाओं का बहुवचन तिर्यक रूप (-ओं प्रत्यय)", ready: false },
+      { id: "11", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep11.md", title: "पाठ ११: यात्रा और वाहन", words: "२५१–२७५", grammar: "सर्वनामों का तिर्यक रूप (मुझको, तुझको, इसको, उसको)", ready: false },
+      { id: "12", quarter: "प्रथम चरण (पाठ ०१-१२: संज्ञा, लिंग, वचन और विशेषण)", file: "md/ep12.md", title: "पाठ १२: ऋतुएँ और त्योहार", words: "२७६–३००", grammar: "संबन्ध कारक 'का / के / की' की पूर्ण संगति", ready: false },
+
+      // द्वितीय चरण (Quarter 2: पाठ १३ से २४ | शब्द ३०१–६००)
+      { id: "13", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep13.md", title: "पाठ १३: दैनिक अभ्यास और आदतें", words: "३०१–३२५", grammar: "सामान्य वर्तमान काल (ता है / ती है / ते हैं)", ready: false },
+      { id: "14", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep14.md", title: "पाठ १४: कार्यस्थल और श्रम", words: "३२६–३५०", grammar: "तात्कालिक वर्तमान काल (रहा है / रही है / रहे हैं)", ready: false },
+      { id: "15", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep15.md", title: "पाठ १५: बीता हुआ कल", words: "३५१–३७५", grammar: "अकर्मक क्रियाओं का सामान्य भूतकाल (गया, आया, बैठा)", ready: false },
+      { id: "16", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep16.md", title: "पाठ १६: किस्से और कहानियाँ", words: "३७६–४००", grammar: "सकर्मक क्रियाओं में कर्ता कारक 'ने' का नियम", ready: false },
+      { id: "17", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep17.md", title: "पाठ १७: आने वाला कल और योजनाएँ", words: "४०१–४२५", grammar: "सामान्य भविष्यत् काल (ऊँगा, एगा, एंगे)", ready: false },
+      { id: "18", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep18.md", title: "पाठ १८: अनुभव और यादें", words: "४२६–४५०", grammar: "पूर्ण भूतकाल (था, थी, थे) बनाम आसन्न भूतकाल", ready: false },
+      { id: "19", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep19.md", title: "पाठ १९: कला और संगीत", words: "४५१–४७५", grammar: "संयुक्त क्रिया - 'लेना' (स्वयं के लाभ के लिए)", ready: false },
+      { id: "20", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep20.md", title: "पाठ २०: दान और परोपकार", words: "४७६–५००", grammar: "संयुक्त क्रिया - 'देना' (दूसरे के लिए कार्य)", ready: false },
+      { id: "21", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep21.md", title: "पाठ २१: बदलाव और यात्रा", words: "५०१–५२५", grammar: "संयुक्त क्रिया - 'जाना' (पूर्णता और परिवर्तन)", ready: false },
+      { id: "22", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep22.md", title: "पाठ २२: सावधानी और सतर्कता", words: "५२६–५५०", grammar: "संयुक्त क्रिया - 'बैठना' और 'उठना' (आकस्मिक क्रियाएँ)", ready: false },
+      { id: "23", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep23.md", title: "पाठ २३: खेल और व्यायाम", words: "५५१–५७५", grammar: "क्रिया की निरंतरता (रहना और जाना का प्रयोग)", ready: false },
+      { id: "24", quarter: "द्वितीय चरण (पाठ १३-२४: काल रचना, 'ने' नियम एवं संयुक्त क्रियाएँ)", file: "md/ep24.md", title: "पाठ २४: सफलता और संकल्प", words: "५७६–६००", grammar: "'ने' नियम के अपवाद (बोलना, भूलना, लाना)", ready: false },
+
+      // तृतीय चरण (Quarter 3: पाठ २५ से ३६ | शब्द ६०१–९००)
+      { id: "25", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep25.md", title: "पाठ २५: आदर और शिष्टाचार", words: "६०१–६२५", grammar: "आज्ञार्थक रूप - 'दीजिए / कीजिए' (सादर अनुरोध)", ready: false },
+      { id: "26", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep26.md", title: "पाठ २६: मित्रता और संवाद", words: "६२६–६५०", grammar: "मध्यम आदर - 'करो / खाओ' और निषेध ('मत' का प्रयोग)", ready: false },
+      { id: "27", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep27.md", title: "पाठ २७: निर्माण और शिल्प", words: "६५१–६७५", grammar: "प्रथम प्रेरणार्थक क्रियाएँ (करना से कराना)", ready: false },
+      { id: "28", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep28.md", title: "पाठ २८: उद्योग और व्यापार", words: "६७६–७००", grammar: "द्वितीय प्रेरणार्थक क्रियाएँ (कराना से करवाना)", ready: false },
+      { id: "29", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep29.md", title: "पाठ २९: कर्तव्य और समाज", words: "७०१–७२५", grammar: "नैतिक कर्तव्य - 'चाहिए' की वाक्य रचना", ready: false },
+      { id: "30", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep30.md", title: "पाठ ३०: विवशता और नियम", words: "७२६–७५०", grammar: "बाह्य विवशता - 'पड़ना' (करना पड़ता है)", ready: false },
+      { id: "31", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep31.md", title: "पाठ ३१: आंतरिक दायित्व", words: "७५१–७७५", grammar: "आंतरिक संकल्प - 'होना' (मुझे जाना है)", ready: false },
+      { id: "32", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep32.md", title: "पाठ ३२: सामर्थ्य और शक्ति", words: "७७६–८००", grammar: "क्षमता बोधक - 'सकना' (कर सकता हूँ)", ready: false },
+      { id: "33", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep33.md", title: "पाठ ३३: अवसर और उपलब्धि", words: "८०१–८२५", grammar: "उपलब्धि बोधक - 'पाना' (कर पाना)", ready: false },
+      { id: "34", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep34.md", title: "पाठ ३४: नियम और घोषणाएँ", words: "८२६–८५०", grammar: "कर्मवाच्य (Passive Voice) - 'किया जाता है'", ready: false },
+      { id: "35", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep35.md", title: "पाठ ३५: इतिहास और परंपरा", words: "८५१–८७५", grammar: "कर्मवाच्य का भूतकाल - 'किया गया / बनाई गई'", ready: false },
+      { id: "36", quarter: "तृतीय चरण (पाठ २५-३६: आज्ञार्थ, प्रेरणार्थक, विवशता एवं कर्मवाच्य)", file: "md/ep36.md", title: "पाठ ३६: असमर्थता का भाव", words: "८७६–९००", grammar: "असमर्थता सूचक भाववाच्य ('मुझसे चला नहीं जाता')", ready: false },
+
+      // चतुर्थ चरण (Quarter 4: पाठ ३७ से ४८ | शब्द ९०१–१२००)
+      { id: "37", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep37.md", title: "पाठ ३७: शर्त और परिणाम", words: "९०१–९२५", grammar: "शर्त बोधक वाक्य - 'अगर / यदि... तो...'", ready: false },
+      { id: "38", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep38.md", title: "पाठ ३८: इच्छा और सम्भावना", words: "९२६–९५०", grammar: "सम्भावनार्थ (Subjunctive) - 'शायद वह आए'", ready: false },
+      { id: "39", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep39.md", title: "पाठ ३९: अपूर्ण इच्छाएँ", words: "९५१–९७५", grammar: "हेतुहेतुमद्भूत - 'अगर पढ़ते, तो उत्तीर्ण होते'", ready: false },
+      { id: "40", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep40.md", title: "पाठ ४०: व्यक्ति और संबंध", words: "९७६–१०००", grammar: "संबन्धवाचक सह-संबन्ध - 'जो... वो... / जिसे... उसे...'", ready: false },
+      { id: "41", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep41.md", title: "पाठ ४१: स्थान और दिशा", words: "१००१–१०२५", grammar: "स्थानवाचक सह-संबन्ध - 'जहाँ... वहाँ...'", ready: false },
+      { id: "42", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep42.md", title: "पाठ ४२: काल और क्षण", words: "१०२६–१०५०", grammar: "कालवाचक सह-संबन्ध - 'जब... तब... / जैसे ही... वैसे ही...'", ready: false },
+      { id: "43", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep43.md", title: "पाठ ४३: रीति और परिमाण", words: "१०५१–१०७५", grammar: "रीतिवाचक सह-संबन्ध - 'जैसा... वैसा... / जितना... उतना...'", ready: false },
+      { id: "44", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep44.md", title: "पाठ ४४: भाव और विचार", words: "१०७६–११००", grammar: "भाववाचक संज्ञा प्रत्यय - '-ता' (सुंदरता, मानवता)", ready: false },
+      { id: "45", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep45.md", title: "पाठ ४५: बचपन और अपनापन", words: "११०१–११२५", grammar: "भाववाचक संज्ञा प्रत्यय - '-पन' (बचपन, पागलपन)", ready: false },
+      { id: "46", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep46.md", title: "पाठ ४६: सामाजिक गरिमा", words: "११२६–११५०", grammar: "आदरार्थी बहुवचन और आदर-सूचक क्रियाएँ", ready: false },
+      { id: "47", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep47.md", title: "पाठ ४७: दार्शनिक चिंतन", words: "११५१–११७५", grammar: "गहन वाक्य रचना और संश्लिष्ट संयोजक (यद्यपि... तथापि...)", ready: false },
+      { id: "48", quarter: "चतुर्थ चरण (पाठ ३७-४८: सम्भावना, शर्त, प्रत्यय एवं गहन सांस्कृतिक मुहावरे)", file: "md/ep48.md", title: "पाठ ४८: भाषा का माधुर्य", words: "११७६–१२००", grammar: "सांस्कृतिक बारीकियों और पूर्ण संवाद प्रवाह का शिखर", ready: false }
+    ];
+
+    let currentEpisode = episodes[0];
+    let currentRawMarkdown = "";
+    const renderer = new SimpleMarkdownRenderer();
+
+    const episodeListEl = document.getElementById('episode-list');
+    const contentAreaEl = document.getElementById('content-area');
+    const currentTitleEl = document.getElementById('current-title');
+    const currentMetaEl = document.getElementById('current-meta');
+    const rawLinkEl = document.getElementById('raw-link');
+    const copyBtnEl = document.getElementById('copy-btn');
+    const searchInput = document.getElementById('search-input');
+
+    function renderSidebar(filteredEpisodes = episodes) {
+      episodeListEl.innerHTML = '';
+      let currentQuarter = '';
+
+      filteredEpisodes.forEach(ep => {
+        if (ep.quarter !== currentQuarter) {
+          currentQuarter = ep.quarter;
+          const qLi = document.createElement('li');
+          qLi.className = 'quarter-header';
+          qLi.textContent = currentQuarter;
+          episodeListEl.appendChild(qLi);
+        }
+
+        const li = document.createElement('li');
+        li.className = `episode-item ${ep.id === currentEpisode.id ? 'active' : ''}`;
+        li.innerHTML = `
+          <div class="episode-title">${ep.title}</div>
+          <div class="episode-subtitle">शब्द: ${ep.words} ${ep.ready ? '✅' : '⏳'}</div>
+        `;
+
+        li.addEventListener('click', () => {
+          loadEpisode(ep);
+        });
+
+        episodeListEl.appendChild(li);
+      });
+    }
+
+    async function loadEpisode(ep) {
+      currentEpisode = ep;
+      currentTitleEl.textContent = ep.title;
+      currentMetaEl.textContent = `शब्द: ${ep.words} | व्याकरण: ${ep.grammar}`;
+      rawLinkEl.href = ep.file;
+      rawLinkEl.setAttribute('download', `ep${ep.id}.md`);
+
+      renderSidebar();
+
+      contentAreaEl.innerHTML = `
+        <div class="loading-box">
+          <div class="spinner"></div>
+          <p>${ep.title} की सामग्री लोड हो रही है...</p>
+        </div>
+      `;
+
+      try {
+        const response = await fetch(ep.file);
+        if (!response.ok) {
+          throw new Error('सामग्री अभी उपलब्ध नहीं है');
+        }
+        const markdown = await response.text();
+        currentRawMarkdown = markdown;
+        contentAreaEl.innerHTML = renderer.render(markdown);
+      } catch (err) {
+        contentAreaEl.innerHTML = `
+          <div class="loading-box">
+            <h3>⚠️ यह पाठ आगामी बैच में तैयार किया जाएगा</h3>
+            <p>यह पाठ (${ep.title}) पाठ्यचर्या का भाग है और शीघ्र ही जोड़ा जा रहा है।</p>
+          </div>
+        `;
+      }
+    }
+
+    // Copy Raw Markdown
+    copyBtnEl.addEventListener('click', () => {
+      if (!currentRawMarkdown) return;
+      navigator.clipboard.writeText(currentRawMarkdown).then(() => {
+        const origText = copyBtnEl.textContent;
+        copyBtnEl.textContent = "✅ कॉपी हो गया!";
+        setTimeout(() => { copyBtnEl.textContent = origText; }, 2000);
+      });
+    });
+
+    // Search filter
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const filtered = episodes.filter(ep => 
+        ep.title.toLowerCase().includes(q) || 
+        ep.words.includes(q) || 
+        ep.grammar.toLowerCase().includes(q)
+      );
+      renderSidebar(filtered);
+    });
+
+    // Initialize
+    loadEpisode(currentEpisode);
+  </script>
+</body>
+</html>
